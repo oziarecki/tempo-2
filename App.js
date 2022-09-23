@@ -1,7 +1,15 @@
-import { React } from 'react';
+import React,{useState} from 'react';
 import { StyleSheet, Text, TextInput, Touchable, TouchableOpacity, View } from 'react-native';
 import Tempo from './components/Tempo';
+import Api from './components/Api';
 export default function App() {
+  const [dados,setDados] = useState("");
+  const [cidade, setCidade] = useState("");
+
+  async function carregaTempo(){
+    const response = await Api.get(`weather?array_limit=1&fields=only_results,temp,city_name,forecast,max,min,date,description&key=1c54508e&city_name=${cidade},SP`);
+    setDados(response.data.forecast[0]);
+  }
   return (
     <View style={styles.container}>
       <View style={styles.bloco}>
@@ -12,18 +20,20 @@ export default function App() {
         <TextInput
         placeholder='digite aqui a cidade ...'
         styles={styles.input}
+        value={cidade}
+        onChangeText={(value)=>setCidade(value)}
         /> 
 
       </View>
       
       <View style={styles.bloco}>
-        <TouchableOpacity style={styles.botao}>
+        <TouchableOpacity style={styles.botao} onPress={carregaTempo}>
           <Text style={styles.textoBotao}>Buscar</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.bloco}>
-        <Tempo />
+        <Tempo previsao={dados}/>
       </View>
       
       </View>
@@ -38,7 +48,7 @@ const styles = StyleSheet.create({
     bloco:{
       marginTop: 30,
       width: '80%',
-      marginLeft: '10%'
+      marginLeft: '10%',
     },
     label:{
       fontSize: 20,
@@ -52,7 +62,7 @@ const styles = StyleSheet.create({
       fontSize: 20
     },
     botao:{
-      backgroundColor:"#000",
+      backgroundColor:"#005",
     },
     textoBotao:{
       fontSize: 20,
